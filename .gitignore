@@ -1,0 +1,6 @@
+*.o
+*.exe
+pk_malloc/pk_malloc.layout
+pk_malloc/pk_malloc.dev
+pk_malloc/Makefile.win
+pk_malloc/main.c
