@@ -4,14 +4,12 @@ char pool[RESERVE];
 
 void mem_init()
 {
-	
 	size_t* writer = (size_t*)(pool);
 	while (writer - (size_t*)(pool) != RESERVE)
 	{
 		*writer = 0;
 		writer++;
 	}
-	
 }
 
 void* mem_malloc(size_t size)
@@ -48,7 +46,7 @@ void* mem_malloc(size_t size)
 
 void* mem_realloc(void* mem, size_t new_size)
 {
-	new_size += sizeof(new_size);
+	new_size += sizeof(size_t);
 	size_t* header = (size_t*)(mem) - 1;
 	if (*header >= new_size)
 	{
@@ -84,7 +82,7 @@ void* mem_realloc(void* mem, size_t new_size)
 			void* realloc_t = mem_malloc(new_size - sizeof(size_t));
 			if (realloc_t != NULL)
 			{
-				mem_copy(realloc_t, mem);
+				mem_copy(realloc_t, mem, *header);
 				mem_free(mem);
 				return realloc_t;
 			}
@@ -109,18 +107,16 @@ void mem_free(void* mem)
 	}
 }
 
-void mem_copy(void* dest, void* source)
+void mem_copy(void* dest, void* source, size_t size)
 {
-	size_t copy = 0;
-	size_t* header = (size_t*)(source);
-	size_t occupy = *(header - 1);
-	size_t* writer = (size_t*)(dest);
-	while (copy != occupy)
+	size_t* header = (size_t*)(dest) - 1;
+	if (*header >= size)
 	{
-		*writer = *header;
-		writer++;
-		header++;
-		copy += sizeof(size_t);
+		memcpy(dest, source, size);
+	}
+	else
+	{
+		memcpy(dest, source, *header);
 	}
 }
 
